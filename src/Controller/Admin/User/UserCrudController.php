@@ -7,6 +7,7 @@
 namespace App\Controller\Admin\User;
 
 use App\Entity\Admin\User;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -35,6 +36,24 @@ class UserCrudController extends AbstractCrudController
             ->setSearchFields(['username', 'email'])
             ->setPaginatorPageSize(10)
             ->setPaginatorRangeSize(3);
+    }
+
+    public function createEntity(string $entityFqcn)
+    {
+        $user = new User();
+        $user->setCreatedByUser($this->getUser());
+        $user->setModifiedByUser($this->getUser());
+
+        return $user;
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (!$entityInstance instanceof User) return;
+
+        $entityInstance->setModifiedByUser($this->getUser());
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 
     /**

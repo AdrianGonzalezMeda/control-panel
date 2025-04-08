@@ -54,6 +54,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modified = null;
 
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?self $created_by_user = null;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?self $modified_by_user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -180,5 +188,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setModifiedValue()
     {
         $this->modified = new \DateTime();
+    }
+
+    public function getCreatedByUser(): ?self
+    {
+        return $this->created_by_user;
+    }
+
+    public function setCreatedByUser(?self $created_by_user): static
+    {
+        $this->created_by_user = $created_by_user;
+
+        return $this;
+    }
+
+    public function getModifiedByUser(): ?self
+    {
+        return $this->modified_by_user;
+    }
+
+    public function setModifiedByUser(?self $modified_by_user): static
+    {
+        $this->modified_by_user = $modified_by_user;
+
+        return $this;
     }
 }
