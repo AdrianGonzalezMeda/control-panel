@@ -11,6 +11,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\Index(name: "idx_user_username", columns: ["username"])]
+#[ORM\Index(name: "idx_user_email", columns: ["email"])]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -18,27 +21,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(type: 'string', length: 180)]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $password = null;
 
-    #[ORM\Column(length: 150)]
+    /**
+     * @var string Username
+     */
+    #[ORM\Column(type: 'string', length: 150)]
     private ?string $username = null;
 
-    #[ORM\Column]
+    /**
+     * @var \DateTimeImmutable stores the time when the user was created
+     */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $created = null;
 
+    /**
+     * @var \DateTimeInterface stores the time when the user was modified
+     */
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modified = null;
 
@@ -151,5 +163,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->modified = $modified;
 
         return $this;
+    }
+
+    /**
+     * Documentation Lifecycle Callbacks 
+     * https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/events.html
+     */
+    #[ORM\PrePersist]
+    public function setDatetimeValues()
+    {
+        $this->created = new \DateTimeImmutable();
+        $this->modified = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setModifiedValue()
+    {
+        $this->modified = new \DateTime();
     }
 }
