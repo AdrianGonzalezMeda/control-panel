@@ -8,6 +8,8 @@ namespace App\Controller\Admin\User;
 
 use App\Entity\Admin\User;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -35,25 +37,18 @@ class UserCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_DETAIL, fn(User $user) => sprintf('User: <b>%s</b>', $user->getUsername()))
             ->setSearchFields(['username', 'email'])
             ->setPaginatorPageSize(10)
-            ->setPaginatorRangeSize(3);
+            ->setPaginatorRangeSize(3)
+            ->showEntityActionsInlined();
     }
 
-    public function createEntity(string $entityFqcn)
+    /**
+     * Documentation Actions https://symfony.com/bundles/EasyAdminBundle/current/actions.html
+     */
+    public function configureActions(Actions $actions): Actions
     {
-        $user = new User();
-        $user->setCreatedByUser($this->getUser());
-        $user->setModifiedByUser($this->getUser());
-
-        return $user;
-    }
-
-    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
-    {
-        if (!$entityInstance instanceof User) return;
-
-        $entityInstance->setModifiedByUser($this->getUser());
-
-        parent::updateEntity($entityManager, $entityInstance);
+        return $actions
+        ->add(Crud::PAGE_INDEX, Action::DETAIL)
+        ->add(Crud::PAGE_EDIT, Action::SAVE_AND_ADD_ANOTHER);
     }
 
     /**
@@ -88,5 +83,23 @@ class UserCrudController extends AbstractCrudController
 
                 break;
         }
+    }
+
+    public function createEntity(string $entityFqcn)
+    {
+        $user = new User();
+        $user->setCreatedByUser($this->getUser());
+        $user->setModifiedByUser($this->getUser());
+
+        return $user;
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (!$entityInstance instanceof User) return;
+
+        $entityInstance->setModifiedByUser($this->getUser());
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 }
