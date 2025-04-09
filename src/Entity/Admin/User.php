@@ -13,7 +13,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\Index(name: "idx_user_username", columns: ["username"])]
 #[ORM\Index(name: "idx_user_email", columns: ["email"])]
-#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -171,23 +170,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->modified = $modified;
 
         return $this;
-    }
-
-    /**
-     * Documentation Lifecycle Callbacks 
-     * https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/events.html
-     */
-    #[ORM\PrePersist]
-    public function setDatetimeValues()
-    {
-        $this->created = new \DateTimeImmutable();
-        $this->modified = new \DateTimeImmutable();
-    }
-
-    #[ORM\PreUpdate]
-    public function setModifiedValue()
-    {
-        $this->modified = new \DateTime();
     }
 
     public function getCreatedByUser(): ?self
