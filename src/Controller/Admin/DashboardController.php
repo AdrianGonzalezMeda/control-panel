@@ -6,6 +6,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Admin\User;
+use App\Entity\Blog\Category;
+use App\Entity\Blog\Post;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -30,5 +32,7 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('Users', 'fas fa-user', User::class);
+        yield MenuItem::linkToCrud('Categories', 'fas fa-icons', Category::class);
+        yield MenuItem::linkToCrud('Posts', 'fas fa-pen-to-square', Post::class);
     }
 }

@@ -23,7 +23,7 @@ class Post
     #[ORM\Column(type: Types::BOOLEAN)]
     private ?bool $is_published = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
