@@ -85,6 +85,9 @@ class UserCrudController extends AbstractCrudController
         }
     }
 
+    /**
+     * Documentation https://symfony.com/bundles/EasyAdminBundle/current/crud.html#creating-persisting-and-deleting-entities
+     */
     public function createEntity(string $entityFqcn)
     {
         $user = new User();
