@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -10,7 +9,7 @@ use Doctrine\ORM\Events;
 
 #[AsDoctrineListener(event: Events::prePersist, priority: 0)]
 #[AsDoctrineListener(event: Events::preUpdate, priority: 0)]
-class BaseEntityListener
+class BaseDoctrineListener
 {
 
     public function prePersist(PrePersistEventArgs $args): void

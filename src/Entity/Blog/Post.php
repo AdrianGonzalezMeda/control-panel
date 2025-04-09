@@ -5,8 +5,11 @@ namespace App\Entity\Blog;
 use App\Repository\Blog\PostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
+#[UniqueEntity('slug')]
 class Post
 {
     #[ORM\Id]
@@ -23,6 +26,9 @@ class Post
     #[ORM\Column(type: Types::BOOLEAN)]
     private ?bool $is_published = null;
 
+    #[ORM\Column(length: 150, type: Types::STRING, unique: true)]
+    private ?string $slug = null;
+
     #[ORM\ManyToOne(targetEntity: Category::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
@@ -32,6 +38,11 @@ class Post
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modified = null;
+
+    public function __toString(): string
+    {
+        return $this->getTitle();
+    }
 
     public function getId(): ?int
     {
@@ -74,16 +85,23 @@ class Post
         return $this;
     }
 
-    public function getCreated(): ?\DateTimeImmutable
+    public function getSlug(): ?string
     {
-        return $this->created;
+        return $this->slug;
     }
 
-    public function setCreated(\DateTimeImmutable $created): static
+    public function setSlug(string $slug): static
     {
-        $this->created = $created;
+        $this->slug = $slug;
 
         return $this;
+    }
+
+    public function computeSlug(SluggerInterface $slugger)
+    {
+        if(!$this->slug || '-' === $this->slug) {
+            $this->slug = (string) $slugger->slug((string) $this)->lower();
+        }
     }
 
     public function getCategory(): ?Category
@@ -94,6 +112,18 @@ class Post
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getCreated(): ?\DateTimeImmutable
+    {
+        return $this->created;
+    }
+
+    public function setCreated(\DateTimeImmutable $created): static
+    {
+        $this->created = $created;
 
         return $this;
     }
