@@ -2,6 +2,7 @@
 
 namespace App\Entity\Blog;
 
+use App\Entity\Admin\User;
 use App\Repository\Blog\PostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,8 +24,8 @@ class Post
     #[ORM\Column(type: Types::TEXT)]
     private ?string $text = null;
 
-    #[ORM\Column(type: Types::BOOLEAN)]
-    private ?bool $is_published = null;
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private ?bool $is_published = false;
 
     #[ORM\Column(length: 150, type: Types::STRING, unique: true)]
     private ?string $slug = null;
@@ -38,6 +39,14 @@ class Post
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modified = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $createdByUser = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $modifiedByUser = null;
 
     public function __toString(): string
     {
@@ -136,6 +145,30 @@ class Post
     public function setModified(\DateTimeInterface $modified): static
     {
         $this->modified = $modified;
+
+        return $this;
+    }
+
+    public function getCreatedByUser(): ?User
+    {
+        return $this->createdByUser;
+    }
+
+    public function setCreatedByUser(?User $createdByUser): static
+    {
+        $this->createdByUser = $createdByUser;
+
+        return $this;
+    }
+
+    public function getModifiedByUser(): ?User
+    {
+        return $this->modifiedByUser;
+    }
+
+    public function setModifiedByUser(?User $modifiedByUser): static
+    {
+        $this->modifiedByUser = $modifiedByUser;
 
         return $this;
     }

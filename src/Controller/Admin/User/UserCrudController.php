@@ -60,6 +60,7 @@ class UserCrudController extends AbstractCrudController
         yield ChoiceField::new('roles')
             ->setChoices([
                 'Usuario' => 'ROLE_USER',
+                'Contenidos Blog' => 'ROLE_BLOG_CONTENT',
                 'Admin' => 'ROLE_ADMIN',
             ])
             ->allowMultipleChoices();

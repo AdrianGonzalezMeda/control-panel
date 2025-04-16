@@ -1,0 +1,16 @@
+{% extends '@email/default/notification/body.html.twig' %}
+
+{% block content %}
+    {#Author: {{ post.author }}<br />#}
+    Title: {{ post.title }}<br />
+
+    <p>
+        {{ post.text }}
+    </p>
+{% endblock %}
+
+{% block action %}
+    <spacer size="16"></spacer>
+    <button href="{{ url('admin_review_post', { id: post.id }) }}">Accept</button>
+    <button href="{{ url('admin_review_post', { id: post.id, reject: true }) }}">Reject</button>
+{% endblock %}

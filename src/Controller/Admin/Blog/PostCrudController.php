@@ -3,6 +3,7 @@
 namespace App\Controller\Admin\Blog;
 
 use App\Entity\Blog\Post;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -40,10 +41,36 @@ class PostCrudController extends AbstractCrudController
         yield TextField::new('title');
         yield TextEditorField::new('text');
         yield AssociationField::new('category');
-        yield BooleanField::new('is_published', 'Published');
+        yield BooleanField::new('is_published', 'Published')->setPermission('ROLE_ADMIN');
+        yield AssociationField::new('createdByUser')
+        ->setDisabled()
+        ->setLabel('Author')
+        ->hideWhenCreating();
 
         if (!in_array($pageName, [Crud::PAGE_NEW, Crud::PAGE_EDIT])) {
             yield DateField::new('created');
         }
+    }
+
+    /**
+     * Documentation https://symfony.com/bundles/EasyAdminBundle/current/crud.html#creating-persisting-and-deleting-entities
+     */
+    public function createEntity(string $entityFqcn)
+    {
+        $post = new Post();
+        $post->setCreatedByUser($this->getUser());
+        $post->setModifiedByUser($this->getUser());
+
+        return $post;
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Post) return;
+
+        $entityInstance->setModifiedByUser($this->getUser());
+
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 }

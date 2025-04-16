@@ -61,6 +61,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?self $modified_by_user = null;
 
+    public function __toString()
+    {
+        return $this->getUsername();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
